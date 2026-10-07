@@ -1,0 +1,27 @@
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+
+# Android Studio / IDE
+.idea/
+*.iml
+.externalNativeBuild/
+.cxx/
+
+# Local generated captures and benchmark outputs
+shots/*.png
+shots/out_*.mp4
+
+# Generated APKs
+*.apk
+*.aab
+
+# Hermes local plans are intentional project artifacts; keep .hermes/plans/
+
+# Private release material
+*.p12
+*.pem
+*.key
+*.pass
+/signing/
