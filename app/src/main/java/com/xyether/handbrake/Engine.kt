@@ -47,7 +47,6 @@ object RenderBus {
     }
 }
 
-// ============================ public entry ============================
 suspend fun renderJob(ctx: Context, job: Job, outFile: File): Long =
     kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
         RenderExecution.run(cancelled = { RenderBus.abortRequested }) { session ->
@@ -55,7 +54,7 @@ suspend fun renderJob(ctx: Context, job: Job, outFile: File): Long =
         }
     }
 
-// ============================ audio pump (dedicated audio-track extractor) ============================
+// Keep audio extraction separate from video decoding.
 private class AudioPump(private val ext: MediaExtractor?) {
     class Sample(val bytes: ByteBuffer, val info: MediaCodec.BufferInfo)
     private val pending = ArrayDeque<Sample>()
@@ -96,7 +95,6 @@ private class AudioPump(private val ext: MediaExtractor?) {
     }
 }
 
-// ============================ main transcode ============================
 internal fun encodeWithSurfaces(context: Context, job: Job, out: File, hardwareOnly: Boolean = true, session: PipelineSession = PipelineSession()): Long {
     val s = job.settings
     val pfd = context.contentResolver.openFileDescriptor(job.uri, "r")!!
@@ -399,7 +397,6 @@ private fun applyRateMode(f: MediaFormat, s: Settings, durSec: Float) {
         MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)
 }
 
-// ============================ viewfinder previewer ============================
 private class FramePreviewer(private val context: Context, private val uri: android.net.Uri) {
     private val worker = java.util.concurrent.Executors.newSingleThreadExecutor()
     private val busy = java.util.concurrent.atomic.AtomicBoolean(false)

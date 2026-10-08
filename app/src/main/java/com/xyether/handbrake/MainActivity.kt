@@ -100,16 +100,14 @@ import androidx.lifecycle.viewModelScope
 import java.io.File
 import java.util.UUID
 
-// ---------- palette ----------
 val Bg = Color(0xFF050505)
 val CardCol = Color(0xFF0D0D0D)
 val Line = Color(0xFF222222)
 val ChipBg = Color(0xFF171717)
 val TextPri = Color(0xFFF4F4F4)
 val TextSec = Color(0xFF969696)
-val TextDim = Color(0xFF585858)
+val TextDim = Color(0xFF888888)
 
-// ---------- type ----------
 val Inter = FontFamily(
     Font(R.font.inter_regular, FontWeight.Normal),
     Font(R.font.inter_medium, FontWeight.Medium),
@@ -132,7 +130,6 @@ val AppType = Typography(
     labelSmall = ts(10.sp, FontWeight.Medium, 1.2.sp),
 )
 
-// ---------- model ----------
 data class Job(
     val id: String = UUID.randomUUID().toString(),
     val uri: Uri,
@@ -152,7 +149,6 @@ data class Job(
 
 enum class JobStatus { QUEUED, RUNNING, DONE, FAILED }
 
-// ---- HandBrake-style settings model ----
 data class Settings(
     val webOptimize: Boolean = false,
     val resolution: Int? = null,          // null = off/source; else height cap
@@ -205,7 +201,6 @@ fun probeMeta(ctx: android.content.Context, uri: Uri): VideoMeta? {
     } catch (_: Exception) { return null } finally { mmr.release() }
 }
 
-// ---- size estimation: bits-per-pixel-per-frame model ----
 fun estBitrateMbps(s: Settings, w: Int, h: Int, fps: Float): Double {
     return s.vbrMbps.toDouble()
 }
@@ -834,7 +829,6 @@ fun EstimateRow(job: Job) {
     }
 }
 
-// ---------- render window (full-screen overlay) ----------
 @Composable
 fun RenderWindow(onAbort: () -> Unit) {
     val progress = RenderBus.progress.floatValue
@@ -1017,7 +1011,6 @@ fun VideoThumb(uri: Uri, modifier: Modifier) {
     }
 }
 
-// ---------- HandBrake-style settings UI ----------
 fun settingsSummary(job: Job): String = buildString {
     append(fmtSize(job.sizeBytes))
     val s = job.settings
@@ -1114,8 +1107,8 @@ fun WebOptimizeRow(checked: Boolean, onCheck: (Boolean) -> Unit) {
     ) {
         Column(Modifier.weight(1f)) {
             Text("Web Optimized", color = TextPri, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-            Text("MOVES MP4 METADATA FOR STREAMING", color = TextDim, fontSize = 8.5.sp,
-                fontWeight = FontWeight.Medium, letterSpacing = 1.2.sp,
+            Text("Start playback before the download finishes", color = TextDim, fontSize = 8.5.sp,
+                fontWeight = FontWeight.Medium, letterSpacing = 0.sp,
                 modifier = Modifier.padding(top = 2.dp))
         }
         Switch(
@@ -1189,7 +1182,7 @@ fun <T> OptionRow(
 @Composable
 fun RateControl(s: Settings, onChange: (Settings) -> Unit) {
     Column(Modifier.padding(vertical = 12.dp)) {
-        // single rate mode: avg bitrate (CQ removed — hardware CQ support is spotty)
+        // Hardware constant-quality support varies, so use average bitrate.
         Row(Modifier.padding(top = 14.dp)) {
             Text("Bitrate", color = TextSec, fontSize = 12.sp, modifier = Modifier.weight(1f))
             Text(fmtVbr(s.vbrMbps), color = TextPri, fontSize = 12.sp,
@@ -1201,9 +1194,9 @@ fun RateControl(s: Settings, onChange: (Settings) -> Unit) {
             valueRange = 0.25f..40f,
         )
         Row(Modifier.padding(top = 2.dp)) {
-            Text("SMALLER", color = TextDim, fontSize = 8.5.sp, letterSpacing = 1.2.sp,
+            Text("Smaller file", color = TextDim, fontSize = 8.5.sp, letterSpacing = 0.sp,
                 modifier = Modifier.weight(1f))
-            Text("BIGGER", color = TextDim, fontSize = 8.5.sp, letterSpacing = 1.2.sp)
+            Text("Higher bitrate", color = TextDim, fontSize = 8.5.sp, letterSpacing = 0.sp)
         }
     }
 }
@@ -1280,8 +1273,8 @@ fun EncodingEffortControl(s: Settings, onChange: (Settings) -> Unit) {
     val supported = remember(s.encoder) { encodingEffortSupported(s.encoder.mime) }
     Column(Modifier.padding(vertical = 10.dp)) {
         Text("Encoding speed", color = TextPri, fontSize = 13.sp)
-        Text(if (supported) "Faster uses less encoding effort. Higher effort may improve compression." else
-            "This phone's encoder does not offer adjustable speed. Bitrate still controls output quality.", color = TextSec, fontSize = 11.sp)
+        Text(if (supported) "Higher quality may take longer. Speed depends on your phone." else
+            "This encoder runs at a fixed speed.", color = TextSec, fontSize = 11.sp)
         if (supported) {
             TextButton(onClick = { onChange(s.copy(encodingEffort = null)) }) {
                 Text(if (s.encodingEffort == null) "Device default ✓" else "Use device default")

@@ -1,26 +1,10 @@
-# Xyether HandBrake 🎬
+# Xyether HandBrake
 
-A video compressor for Android, made by **xyether**. Pick your clips, choose how small you want them, and compress them on your phone.
+A video compressor for Android, made by xyether. Add your clips, pick a size preset, and tap **Compress**. You can queue several videos at once.
 
-**[Download the APK](https://github.com/XYETHER/Xyether-HandBrake/releases/latest)** · [Report a bug](https://github.com/XYETHER/Xyether-HandBrake/issues)
+[Download the APK](https://github.com/XYETHER/Xyether-HandBrake/releases/latest)
 
-## What you can do
-
-- Compress one video or a whole batch.
-- Choose H.264 or supported H.265 encoding.
-- Adjust bitrate, resolution, and frame rate.
-- Adjust encoding speed when your phone’s encoder supports it.
-- Keep the original audio, save your results, or share them.
-
-Everything runs on your device. No account or upload needed.
-
-## Getting started
-
-1. Install the APK from Releases. Android may ask you to allow installation from your browser.
-2. Add your videos.
-3. Pick **Balanced**, **Small**, or **Tiny**. Open **More options** for the individual settings.
-4. Tap **Compress** and keep the app open until it finishes.
-5. Save or share the finished videos.
+## Choosing your settings
 
 | Preset | Maximum height | Video bitrate |
 | --- | --- | --- |
@@ -28,33 +12,28 @@ Everything runs on your device. No account or upload needed.
 | Small | 720p | 2.5 Mbps |
 | Tiny | 480p | 1 Mbps |
 
-For better quality, try a higher bitrate. That also makes the file larger. The speed slider depends on your phone; some hardware encoders only offer a fixed speed.
+Open **More options** to set your own bitrate, resolution, frame rate, or encoder. A higher bitrate gives the encoder more room to keep detail, but makes a larger file. H.265 availability and encoding speed controls depend on your phone's hardware.
 
-## A few things to know
+Keep the app open while it compresses. Save or share the finished videos afterward. Save copies you want to keep before uninstalling; Android removes the app's private exports when you uninstall it.
 
-- Requires **Android 8.0 or newer**.
-- Uses your phone’s Android MediaCodec encoder. Speed and codec support vary by device.
-- Outputs MP4. It keeps the first supported audio track; subtitles and extra tracks aren’t included.
-- Videos aren’t enlarged. A frame-rate cap removes frames rather than adding new ones.
-- HDR input isn’t supported yet.
-- Save wanted exports before uninstalling; uninstalling removes the app’s private copies.
+## Supported videos
 
-> 🚧 Still being developed. If a clip fails or gets stuck, open an issue with your phone model, Android version, and the settings you used. Avoid posting private footage.
+Requires Android 8.0 or newer. Processing runs locally through Android MediaCodec.
 
-## Build from source
+The app exports MP4 and keeps the first supported audio track. It doesn't include subtitles or extra tracks. Resolution limits only shrink videos, and frame-rate limits drop frames. HDR input isn't supported yet.
 
-Open the project in Android Studio with **JDK 17+** and **Android SDK 34**, or run:
+Still in development. If a video fails or gets stuck, [open an issue](https://github.com/XYETHER/Xyether-HandBrake/issues) with your phone model, Android version, and settings.
+
+## Building
+
+Open the project in Android Studio with JDK 17+ and Android SDK 34, or run:
 
 ```bash
 ./gradlew :app:testDebugUnitTest :app:assembleDebug
 ```
 
-On Windows, use `gradlew.bat`. Release builds are unsigned unless you supply your own signing key.
+On Windows, use `gradlew.bat`. Release builds are unsigned unless you supply a signing key.
 
-## Credits and license
+Uses Kotlin, Jetpack Compose, Android MediaCodec, OpenGL ES, and the [Inter](https://github.com/rsms/inter) font. Licensed under [MIT](LICENSE); see [third-party notices](THIRD_PARTY_NOTICES.md).
 
-Created by **xyether**. Built with Kotlin, Jetpack Compose, Android MediaCodec, and OpenGL ES. Uses the [Inter](https://github.com/rsms/inter) font.
-
-Licensed under MIT. See [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md).
-
-This is an independent app and is not affiliated with the HandBrake project.
+This app is independent of the HandBrake project.

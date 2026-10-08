@@ -12,11 +12,8 @@ import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
 /**
- * GPU rescale stage: decoder -> SurfaceTexture -> bilinear shader -> encoder input surface.
- *
- * Single-threaded GL (grafika style): ALL EGL/GL calls run on the caller's thread
- * (the engine loop). A tiny helper looper only delivers frame-available notifications,
- * so there are no per-frame thread handoffs — decode/GL/encode stay pipelined.
+ * Scale decoder frames into the encoder surface on the engine thread.
+ * The helper looper only delivers frame notifications; EGL and GL stay on the engine thread.
  */
 class GlScalePass(
     sharedEglContext: EGLContext?,
@@ -45,7 +42,7 @@ class GlScalePass(
     val decoderSurface: android.view.Surface by lazy { android.view.Surface(st) }
 
     init {
-        // --- EGL on the CURRENT thread ---
+        // EGL must stay on the render thread.
         disp = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
         if (disp === EGL14.EGL_NO_DISPLAY) error("no EGL display")
         val ver = IntArray(2)
@@ -69,7 +66,7 @@ class GlScalePass(
         if (draw === EGL14.EGL_NO_SURFACE) error("eglCreateWindowSurface failed")
         if (!EGL14.eglMakeCurrent(disp, draw, draw, ctx)) error("eglMakeCurrent failed")
 
-        // --- external OES texture + SurfaceTexture (callback = counter only) ---
+        // The callback signals frames; it must not make GL calls.
         val ids = IntArray(1)
         GLES20.glGenTextures(1, ids, 0)
         texId = ids[0]
@@ -81,10 +78,9 @@ class GlScalePass(
         st = SurfaceTexture(texId)
         st.setDefaultBufferSize(srcW, srcH)
         st.setOnFrameAvailableListener({
-            frameAvail.release()               // notify only — NO GL here
+            frameAvail.release()               // GL work stays on the render thread.
         }, android.os.Handler(notifyLooper.looper))
 
-        // --- shader program ---
         val vs = """
             attribute vec2 aPos;
             varying vec2 vUv;

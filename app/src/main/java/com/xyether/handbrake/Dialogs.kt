@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import java.io.File
 
-// ---------- completion popup ----------
 @Composable
 fun DoneDialog(job: Job, onDismiss: () -> Unit, onSave: () -> Unit, onShare: () -> Unit) {
     AlertDialog(
@@ -53,7 +52,7 @@ fun DoneDialog(job: Job, onDismiss: () -> Unit, onSave: () -> Unit, onShare: () 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.CheckCircle, null, tint = Color.White, modifier = Modifier.size(22.dp))
                 Spacer(Modifier.width(10.dp))
-                Text("Render complete", color = TextPri, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                Text("Compression finished", color = TextPri, fontSize = 17.sp, fontWeight = FontWeight.Bold)
             }
         },
         text = {
@@ -104,7 +103,6 @@ fun DoneDialog(job: Job, onDismiss: () -> Unit, onSave: () -> Unit, onShare: () 
     )
 }
 
-// ---------- discard confirmation ----------
 @Composable
 fun DiscardDialog(name: String, onCancel: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
@@ -124,15 +122,14 @@ fun DiscardDialog(name: String, onCancel: () -> Unit, onConfirm: () -> Unit) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFB3261E), contentColor = Color.White),
                 shape = RoundedCornerShape(10.dp),
-            ) { Text("Yes, delete", fontSize = 12.sp) }
+            ) { Text("Delete", fontSize = 12.sp) }
         },
         dismissButton = {
-            TextButton(onClick = onCancel) { Text("No, keep it", color = TextSec, fontSize = 12.sp) }
+            TextButton(onClick = onCancel) { Text("Keep", color = TextSec, fontSize = 12.sp) }
         },
     )
 }
 
-// ---------- gallery source picker ----------
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun SourceSheet(current: String, onPick: (String) -> Unit, onDismiss: () -> Unit) {
@@ -169,7 +166,6 @@ fun SourceRow(label: String, sub: String, current: String, onPick: (String) -> U
     }
 }
 
-// ---------- save to device (Movies/XyetherHandBrake via MediaStore) ----------
 @androidx.annotation.RequiresApi(29)
 suspend fun saveToDevice(context: Context, job: Job): Boolean = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
     val resolver = context.contentResolver
@@ -196,7 +192,6 @@ suspend fun saveToDevice(context: Context, job: Job): Boolean = kotlinx.coroutin
     }
 }
 
-// ---------- share ----------
 fun shareVideo(context: Context, job: Job) {
     val f = File(job.outPath ?: return)
     if (!f.exists()) return
